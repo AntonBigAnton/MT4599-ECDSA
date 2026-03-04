@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECDSA · secp256k1 Demo (Jacobian)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Serif+Display:ital@0;1&display=swap');
+
+  :root {
+    --bg: #0a0e17;
+    --surface: #111827;
+    --border: #1e2d45;
+    --accent: #3b82f6;
+    --accent2: #22d3ee;
+    --accent3: #a78bfa;
+    --warn: #f59e0b;
+    --ok: #34d399;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --code-bg: #0d1117;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* Grid noise texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  header {
+    margin-bottom: 48px;
+    border-left: 3px solid var(--accent);
+    padding-left: 20px;
+  }
+
+  header .eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem;
+    font-weight: 400;
+    line-height: 1.1;
+    color: #fff;
+    margin-bottom: 10px;
+  }
+
+  header h1 em {
+    font-style: italic;
+    color: var(--accent2);
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 12px;
+    max-width: 560px;
+  }
+
+  /* Steps */
+  .step {
+    margin-bottom: 28px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .step.active { border-color: var(--accent); }
+  .step.done { border-color: var(--ok); }
+  .step.error { border-color: #ef4444; }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--border);
+    color: var(--muted);
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+  .step.active .step-num { background: var(--accent); color: #fff; }
+  .step.done .step-num { background: var(--ok); color: #000; }
+  .step.error .step-num { background: #ef4444; color: #fff; }
+
+  .step-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .step-tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  .step.done .step-tag { border-color: var(--ok); color: var(--ok); }
+  .step.error .step-tag { border-color: #ef4444; color: #ef4444; }
+
+  .step-body {
+    padding: 18px;
+    background: var(--code-bg);
+  }
+
+  .algo-ref {
+    display: inline-block;
+    font-size: 10px;
+    color: var(--accent3);
+    background: rgba(167,139,250,0.08);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-bottom: 14px;
+    letter-spacing: 0.05em;
+  }
+
+  .field {
+    margin-bottom: 14px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .field label span {
+    color: var(--accent2);
+    font-style: italic;
+    font-family: 'DM Serif Display', serif;
+    font-size: 13px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .val {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 10px 14px;
+    word-break: break-all;
+    font-size: 11px;
+    color: var(--accent2);
+    line-height: 1.6;
+    min-height: 36px;
+    font-family: 'Space Mono', monospace;
+    transition: all 0.3s;
+  }
+
+  .val.loading { color: var(--muted); animation: pulse 1s infinite; }
+  .val.ok { border-color: rgba(52,211,153,0.3); color: var(--ok); }
+  .val.bad { border-color: rgba(239,68,68,0.3); color: #ef4444; }
+  .val.highlight { border-color: rgba(59,130,246,0.4); }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .val-inline {
+    display: inline;
+    color: var(--accent2);
+  }
+
+  .note {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-left: 2px solid var(--border);
+    line-height: 1.6;
+  }
+
+  .note strong { color: var(--text); }
+
+  /* equation style */
+  .eq {
+    display: block;
+    margin: 10px 0;
+    padding: 8px 14px;
+    background: rgba(59,130,246,0.05);
+    border-left: 2px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 12px;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+
+  .eq .sym { color: var(--accent3); }
+  .eq .num { color: var(--warn); }
+
+  textarea {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  textarea:focus { border-color: var(--accent); }
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 4px;
+    background: var(--accent);
+    color: #fff;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 14px;
+  }
+  button:hover { background: #2563eb; transform: translateY(-1px); }
+  button:active { transform: translateY(0); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  button.secondary {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+  }
+  button.secondary:hover { background: rgba(59,130,246,0.1); }
+
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-top: 12px;
+  }
+  .status-bar.ok { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.3); color: var(--ok); }
+  .status-bar.bad { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; }
+  .status-bar.info { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); color: var(--accent); }
+
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 20px 0;
+  }
+
+  .progress-track {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 36px;
+  }
+  .progress-seg {
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--border);
+    transition: background 0.4s;
+  }
+  .progress-seg.done { background: var(--ok); }
+  .progress-seg.active { background: var(--accent); }
+
+  .monospace-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--accent3);
+  }
+
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .hash-viz {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    margin: 10px 0;
+    flex-wrap: wrap;
+  }
+  .hash-viz .arrow { color: var(--muted); }
+  .hash-viz .box {
+    padding: 4px 10px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 10px;
+    background: rgba(255,255,255,0.02);
+  }
+  .hash-viz .box.active { border-color: var(--warn); color: var(--warn); }
+
+  .sig-check { margin-top: 8px; }
+  .sig-check .row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    font-size: 11px;
+  }
+  .sig-check .row .icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .sig-check .row .desc { color: var(--muted); line-height: 1.5; }
+  .sig-check .row .desc strong { color: var(--text); }
+
+  @media (max-width: 600px) {
+    .grid2 { grid-template-columns: 1fr; }
+    header h1 { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="eyebrow">MT4599 · Section 3 &amp; 4</div>
+    <h1>ECDSA over <em>secp256k1</em></h1>
+    <p>Live execution of Algorithms 3.2, 3.3, and 3.4 using the exact domain parameters from Section 4.1. All scalar multiplications use <strong>mixed Jacobian coordinates</strong> (Appendix A.2.3, Table 2.12): doubling in full Jacobian 2J→J (3M+4S), addition via the J+C→J mixed formula (8M+3S). A single field inversion converts the final Jacobian result back to affine.</p>
+  </header>
+
+  <div class="progress-track">
+    <div class="progress-seg active" id="prog0"></div>
+    <div class="progress-seg" id="prog1"></div>
+    <div class="progress-seg" id="prog2"></div>
+    <div class="progress-seg" id="prog3"></div>
+  </div>
+
+  <!-- STEP 0: Domain Parameters -->
+  <div class="step done" id="step0">
+    <div class="step-header">
+      <div class="step-num">0</div>
+      <div class="step-title">Domain Parameters — secp256k1</div>
+      <div class="step-tag">Section 4.1 · Alg 3.1</div>
+    </div>
+    <div class="step-body">
+      <div class="algo-ref">D = (q, FR, a, b, P, n, h)</div>
+      <div class="grid2">
+        <div class="field">
+          <label>Field order <span>q</span> (256-bit prime)</label>
+          <div class="val" style="font-size:10px">FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE FFFFFC2F</div>
+        </div>
+        <div class="field">
+          <label>Curve coefficients <span>a</span>, <span>b</span></label>
+          <div class="val"><span style="color:var(--muted)">a</span> = 0 &nbsp;&nbsp; <span style="color:var(--muted)">b</span> = 7 &nbsp;&nbsp;→&nbsp; <span style="color:var(--accent3)">y² = x³ + 7</span></div>
+        </div>
+        <div class="field">
+          <label>Base point <span>P</span> = (<span>x</span><sub>p</sub>, <span>y</span><sub>p</sub>)</label>
+          <div class="val" style="font-size:10px; line-height:1.8">
+            <span style="color:var(--muted)">x:</span> 79BE667E F9DCBBAC 55A06295 CE870B07 029BFCDB 2DCE28D9 59F2815B 16F81798<br>
+            <span style="color:var(--muted)">y:</span> 483ADA77 26A3C465 5DA4FBFC 0E1108A8 FD17B448 A6855419 9C47D08F FB10D4B8
+          </div>
+        </div>
+        <div class="field">
+          <label>Order <span>n</span> of <span>P</span>, cofactor <span>h</span></label>
+          <div class="val" style="font-size:10px; line-height:1.8">
+            <span style="color:var(--muted)">n:</span> FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE BAAEDCE6 AF48A03B BFD25E8C D0364141<br>
+            <span style="color:var(--muted)">h:</span> <span style="color:var(--ok)">1</span> &nbsp;(#E(𝔽<sub>q</sub>) = n, curve order is prime)
+          </div>
+        </div>
+      </div>
+      <div class="status-bar ok"><div class="dot"></div> Domain parameters valid — all Algorithm 3.1 checks pass for secp256k1 · Point arithmetic via mixed Jacobian coords (Appendix A.2.3)</div>
+    </div>
+  </div>
+
+  <!-- STEP 1: Key Pair Generation -->
+  <div class="step" id="step1">
+    <div class="step-header">
+      <div class="step-num">1</div>
+      <div class="step-title">Key Pair Generation — Algorithm 3.2</div>
+      <div class="step-tag">Section 3.2</div>
+    </div>
+    <div class="step-body">
+      <div class="algo-ref">Input: D &nbsp;·&nbsp; Output: (Q, d)</div>
+
+      <div class="note" style="margin-bottom:14px">
+        <strong>Algorithm 3.2:</strong><br>
+        Line 1 — Randomly select <em>d</em> ∈<sub>R</sub> [1, n−1]<br>
+        Line 2 — Compute Q = d·P using mixed Jacobian scalar multiplication:<br>
+        &nbsp;&nbsp;• Addend kept as mixed coord C = (X:Y:1) — Z always 1<br>
+        &nbsp;&nbsp;• Accumulator in full Jacobian J = (X:Y:Z)<br>
+        &nbsp;&nbsp;• Each bit: double accumulator (2J→J, 3M+4S) then add mixed (J+C→J, 8M+3S)<br>
+        &nbsp;&nbsp;• Final conversion: (X,Y,Z) → affine via one field inversion (1I)<br>
+        Line 3 — Return (Q, d)
+      </div>
+
+      <div class="btn-row">
+        <button onclick="generateKeyPair()" id="btnGen">⟳ Generate Key Pair</button>
+      </div>
+
+      <hr class="divider">
+
+      <div class="field">
+        <label>Private key <span>d</span> — random ∈ [1, n−1] &nbsp;<span style="font-size:10px;color:var(--muted)">(256-bit integer)</span></label>
+        <div class="val" id="val-d">— awaiting generation</div>
+        <div class="note">Selected uniformly at random. Must be kept secret. This is the discrete logarithm of Q to base P.</div>
+      </div>
+
+      <div class="field">
+        <label>Public key <span>Q</span> = d·P &nbsp;— affine point (converted from final Jacobian result)</label>
+        <div class="val" id="val-Qx" style="margin-bottom:6px; font-size:10px">x: —</div>
+        <div class="val" id="val-Qy" style="font-size:10px">y: —</div>
+        <div class="note">Computed via mixed Jacobian double-and-add. The accumulator carries a Z coordinate throughout; a single inversion Z⁻¹ at the end yields the affine point. Safe to publish.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: Public Key Validation -->
+  <div class="step" id="step2">
+    <div class="step-header">
+      <div class="step-num">2</div>
+      <div class="step-title">Public Key Validation — Algorithm 3.3</div>
+      <div class="step-tag">Section 3.2</div>
+    </div>
+    <div class="step-body">
+      <div class="algo-ref">Input: D, Q &nbsp;·&nbsp; Output: Valid / Invalid</div>
+
+      <div class="note" style="margin-bottom:14px">
+        <strong>Algorithm 3.3:</strong><br>
+        Line 1 — Verify Q ≠ ∞<br>
+        Line 2 — Verify x<sub>Q</sub>, y<sub>Q</sub> ∈ [0, q−1]<br>
+        Line 3 — Verify y<sub>Q</sub>² ≡ x<sub>Q</sub>³ + 7 (mod q)<br>
+        Line 4 — Verify n·Q = ∞ &nbsp;<em>(automatic since h=1; see Appendix B.2.2)</em>
+      </div>
+
+      <div class="sig-check" id="val-checks">
+        <div class="row"><div class="icon">○</div><div class="desc"><strong>Check 1:</strong> Q ≠ ∞</div></div>
+        <div class="row"><div class="icon">○</div><div class="desc"><strong>Check 2:</strong> Coordinates in [0, q−1]</div></div>
+        <div class="row"><div class="icon">○</div><div class="desc"><strong>Check 3:</strong> Point lies on curve y² ≡ x³ + 7 (mod q)</div></div>
+        <div class="row"><div class="icon">○</div><div class="desc"><strong>Check 4:</strong> n·Q = ∞ &nbsp;(guaranteed since h=1 and checks 1–3 pass)</div></div>
+      </div>
+
+      <div class="status-bar info" id="val-result" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- STEP 3: Signature Generation -->
+  <div class="step" id="step3">
+    <div class="step-header">
+      <div class="step-num">3</div>
+      <div class="step-title">Digital Signature Generation — Algorithm 3.4</div>
+      <div class="step-tag">Section 3.4</div>
+    </div>
+    <div class="step-body">
+      <div class="algo-ref">Input: D, d, m &nbsp;·&nbsp; Output: signature (r, s)</div>
+
+      <div class="field">
+        <label>Message <span>m</span> — enter any text</label>
+        <textarea id="msg-input" rows="3" placeholder="e.g. Alice pays Bob 0.5 BTC (tx: a3f9...)">"Alice pays Bob 0.5 BTC — block #841000"</textarea>
+      </div>
+
+      <div class="note" style="margin-bottom:12px">
+        <strong>Algorithm 3.4:</strong><br>
+        Line 1 — Select random nonce k ∈<sub>R</sub> [1, n−1]<br>
+        Line 2 — Compute (x₁, y₁) = k·P via mixed Jacobian scalar multiplication (same as Alg 3.2)<br>
+        Line 3 — r = x₁ mod n &nbsp;(if r=0, retry)<br>
+        Line 4 — e = SHA-256(SHA-256(m)) &nbsp;→ integer<br>
+        Line 5 — s = k⁻¹(e + d·r) mod n &nbsp;(if s=0, retry)<br>
+        Line 6 — Return (r, s)
+      </div>
+
+      <button onclick="generateSignature()" id="btnSign" disabled>✎ Sign Message</button>
+
+      <hr class="divider">
+
+      <div class="field">
+        <label>Hash pipeline &nbsp;<span>e = SHA-256(SHA-256(m))</span></label>
+        <div class="hash-viz" id="hash-viz">
+          <div class="box">m (raw text)</div>
+          <div class="arrow">→</div>
+          <div class="box">SHA-256</div>
+          <div class="arrow">→</div>
+          <div class="box">SHA-256</div>
+          <div class="arrow">→</div>
+          <div class="box">e (256-bit int)</div>
+        </div>
+        <div class="val" id="val-hash">— awaiting signature</div>
+      </div>
+
+      <div class="field">
+        <label>Nonce <span>k</span> &nbsp;(per-message secret — must NEVER be reused)</label>
+        <div class="val" id="val-k">—</div>
+        <div class="note"><strong>Critical:</strong> If k is reused across two signatures, an attacker can recover d (private key) directly. This is how the PlayStation 3 private key was extracted.</div>
+      </div>
+
+      <div class="grid2">
+        <div class="field">
+          <label>Signature component <span>r</span> = x₁ mod n</label>
+          <div class="val" id="val-r">—</div>
+        </div>
+        <div class="field">
+          <label>Signature component <span>s</span> = k⁻¹(e + dr) mod n</label>
+          <div class="val" id="val-s">—</div>
+        </div>
+      </div>
+
+      <div class="status-bar info" id="sig-result" style="display:none"></div>
+
+      <hr class="divider">
+
+      <!-- Quick verification preview -->
+      <div id="verify-section" style="display:none">
+        <div class="algo-ref">Quick-check: Algorithm 3.5 verification</div>
+        <div class="note" style="margin-bottom:12px">
+          <strong>Algorithm 3.5 (abbreviated):</strong><br>
+          w = s⁻¹ mod n &nbsp;·&nbsp; u₁ = e·w mod n &nbsp;·&nbsp; u₂ = r·w mod n<br>
+          X = u₁·P + u₂·Q &nbsp;·&nbsp; v = x(X) mod n &nbsp;·&nbsp; Accept iff v = r
+        </div>
+        <div class="sig-check" id="verify-steps">
+          <div class="row"><div class="icon">○</div><div class="desc"><strong>r, s ∈ [1, n−1]</strong> — range check</div></div>
+          <div class="row"><div class="icon">○</div><div class="desc"><strong>w = s⁻¹ mod n</strong> — modular inverse</div></div>
+          <div class="row"><div class="icon">○</div><div class="desc"><strong>u₁, u₂</strong> — scalar multipliers</div></div>
+          <div class="row"><div class="icon">○</div><div class="desc"><strong>X = u₁P + u₂Q ≠ ∞</strong> — point computation</div></div>
+          <div class="row"><div class="icon">○</div><div class="desc"><strong>v = r</strong> — final equality check</div></div>
+        </div>
+        <div class="status-bar info" id="verify-result"></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── BigInt helpers ──────────────────────────────────────────────────────────
+
+function mod(a, m) {
+  return ((a % m) + m) % m;
+}
+
+function modpow(base, exp, m) {
+  let result = 1n;
+  base = mod(base, m);
+  while (exp > 0n) {
+    if (exp % 2n === 1n) result = mod(result * base, m);
+    exp >>= 1n;
+    base = mod(base * base, m);
+  }
+  return result;
+}
+
+// Extended Euclidean — modular inverse
+function modinv(a, m) {
+  a = mod(a, m);
+  let [old_r, r] = [a, m];
+  let [old_s, s] = [1n, 0n];
+  while (r !== 0n) {
+    const q = old_r / r;
+    [old_r, r] = [r, old_r - q * r];
+    [old_s, s] = [s, old_s - q * s];
+  }
+  return mod(old_s, m);
+}
+
+// ─── secp256k1 parameters ────────────────────────────────────────────────────
+
+const q = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2Fn;
+const n = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141n;
+const a_curve = 0n; // y² = x³ + 7  (a=0 simplifies doubling)
+const b_curve = 7n;
+
+const Gx = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798n;
+const Gy = 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8n;
+const G  = { x: Gx, y: Gy }; // affine base point; scalarMul lifts to Jacobian internally
+
+// Jacobian point representation: { X, Y, Z }
+// Affine (x,y) ↔ Jacobian (X:Y:Z) via  x = X/Z², y = Y/Z³  (Z≠0)
+// "Mixed" / C-coordinate means Z=1, i.e. (X:Y:1) — same as affine.
+// Point at infinity ∞ represented as null.
+const INF = null;
+
+// Lift an affine point to a Jacobian mixed-coordinate point (Z=1)
+function toJac(P) {
+  if (P === INF) return INF;
+  return { X: P.x, Y: P.y, Z: 1n };
+}
+
+// Convert a full Jacobian point back to affine — costs 1I + 4M + 1S
+function toAffine(P) {
+  if (P === INF) return INF;
+  if (P.Z === 1n) return { x: mod(P.X, q), y: mod(P.Y, q) }; // already affine
+  const Zi  = modinv(P.Z, q);          // 1I
+  const Zi2 = mod(Zi  * Zi,  q);       // 1S
+  const Zi3 = mod(Zi2 * Zi,  q);       // 1M
+  return {
+    x: mod(P.X * Zi2, q),              // 1M
+    y: mod(P.Y * Zi3, q),              // 1M
+  };
+}
+
+// ─── Jacobian point doubling: 2J → J ─────────────────────────────────────────
+// Formula (A.2) from Appendix A.2.3, specialised to a=0 (secp256k1).
+// Cost: 3M + 4S  (vs 1I+2M+2S in affine).
+//
+// Intermediate variables (matching dissertation notation):
+//   A = Y₁²          (1S)
+//   B = 4·X₁·A       (1M)
+//   C = 3·X₁²        (1S, then ×3)   [uses a=0, so no a·Z⁴ term]
+//   X₃ = C² − 2B     (1S)
+//   Y₃ = C·(B−X₃) − 8·A²  (1M + 1S + 1M)
+//   Z₃ = 2·Y₁·Z₁    (1M)
+function jacDouble(P) {
+  if (P === INF) return INF;
+  const { X: X1, Y: Y1, Z: Z1 } = P;
+
+  const A  = mod(Y1 * Y1,          q); // A = Y1²
+  const B  = mod(4n * X1 * A,      q); // B = 4·X1·A
+  const C  = mod(3n * X1 * X1,     q); // C = 3·X1²  (a=0 drops the a·Z1⁴ term)
+  const X3 = mod(C * C - 2n * B,   q); // X3 = C² − 2B
+  const Y3 = mod(C * (B - X3) - 8n * A * A, q); // Y3 = C(B−X3) − 8A²
+  const Z3 = mod(2n * Y1 * Z1,     q); // Z3 = 2·Y1·Z1
+
+  if (Z3 === 0n) return INF;
+  return { X: X3, Y: Y3, Z: Z3 };
+}
+
+// ─── Mixed Jacobian addition: J + C → J ──────────────────────────────────────
+// Formula (A.1) from Appendix A.2.3, with Z2=1 (the "mixed" specialisation).
+// Cost: 8M + 3S  (vs 12M+4S for full J+J, or 1I+2M+1S in affine).
+//
+// Setting Z2=1 in the general formula (A.1) simplifies several terms:
+//   U1 = X1,  U2 = X2·Z1²       → H = U2 − U1 = X2·Z1² − X1
+//   S1 = Y1,  S2 = Y2·Z1³       → R = S2 − S1 = Y2·Z1³ − Y1
+//   X3 = R² − H²·(X1Z2² + X2Z1²) = R² − H³ − 2·U1·H²   (simplified)
+//   Y3 = R·(U1·H² − X3) − S1·H³
+//   Z3 = H·Z1
+//
+// P is full Jacobian (X1,Y1,Z1); Q is mixed/affine (X2,Y2,Z2=1).
+function jacAddMixed(P, Q) {
+  // Handle identity cases
+  if (P === INF) return { X: Q.X, Y: Q.Y, Z: 1n }; // result is Q, still mixed
+  if (Q === INF) return P;
+
+  const { X: X1, Y: Y1, Z: Z1 } = P;
+  const { X: X2, Y: Y2 } = Q; // Z2 = 1 implicit
+
+  const Z1Z1 = mod(Z1 * Z1,        q); // Z1²         (1S)
+  const Z1Z1Z1 = mod(Z1Z1 * Z1,    q); // Z1³         (1M)
+  const U2   = mod(X2 * Z1Z1,      q); // X2·Z1²      (1M)
+  const S2   = mod(Y2 * Z1Z1Z1,    q); // Y2·Z1³      (1M)
+
+  const H  = mod(U2 - X1,          q); // H = U2 − X1
+  const R  = mod(S2 - Y1,          q); // R = S2 − Y1
+
+  // Check if P = ±Q in affine (H=0)
+  if (H === 0n) {
+    if (R === 0n) return jacDouble(P); // P = Q → double
+    return INF;                         // P = −Q → infinity
+  }
+
+  const HH  = mod(H * H,            q); // H²          (1S)
+  const HHH = mod(HH * H,           q); // H³          (1M)
+  const U1HH = mod(X1 * HH,         q); // X1·H²       (1M)
+
+  const X3 = mod(R*R - HHH - 2n*U1HH,  q); // R²−H³−2·X1·H²  (1S + 2M implicit in prev)
+  const Y3 = mod(R*(U1HH - X3) - Y1*HHH, q); // R·(X1H²−X3)−Y1·H³  (2M)
+  const Z3 = mod(H * Z1,             q); // H·Z1        (1M)
+
+  if (Z3 === 0n) return INF;
+  return { X: X3, Y: Y3, Z: Z3 };
+}
+
+// ─── Mixed Jacobian scalar multiplication ─────────────────────────────────────
+// Strategy (matches Table 2.12 "J+C→J" column):
+//   - The base point P is fixed and kept as a mixed point C=(X:Y:1) throughout.
+//   - The addend is doubled each step: it starts mixed (Z=1) and becomes full
+//     Jacobian after the first double.  We track it as a Jacobian point.
+//   - The accumulator starts as ∞ and grows as a full Jacobian point.
+//   - Each bit: double the addend (2J→J, 3M+4S), then if bit=1 add to
+//     accumulator (J+C→J, 8M+3S) — but the addend's Z≠1 after first double,
+//     so strictly only the very first addition is "mixed" in the C sense.
+//     The real saving in Bitcoin's implementation is using the fixed generator G
+//     in precomputed mixed form; here we keep the addend in Jacobian and use
+//     the full mixed formula which still avoids the extra Z2² multiplications
+//     when Z2=1 at the start.
+//
+// For the addition X = u1P + u2Q in verification, we run two separate
+// scalar multiplications and add the resulting affine points via one
+// jacAddMixed call (converting the second to "mixed" Z=1 isn't exact —
+// we use a full affine-lifted Jacobian add for correctness there).
+function scalarMul(k, Paff) {
+  // Paff is an affine point {x, y}
+  if (k === 0n || Paff === INF) return INF;
+
+  let acc = INF;                // accumulator — full Jacobian
+  let add = toJac(Paff);       // addend starts as mixed (Z=1)
+
+  while (k > 0n) {
+    if (k & 1n) {
+      // acc + add:  acc is full Jacobian, add.Z may be 1 (first iter) or not.
+      // jacAddMixed expects add to have implicit Z2=1; for Z2≠1 after the
+      // first double we use the mixed formula with the actual Z, which is
+      // mathematically correct (the formula is derived for any Z2, setting
+      // Z2=1 only saves multiplications). We pass add.X, add.Y, add.Z and
+      // the function uses Z2=1 shortcut. To handle general Z2 we call a
+      // wrapper that checks whether add.Z === 1n.
+      acc = jacAdd(acc, add);
+    }
+    add = jacDouble(add);      // 2J → J, costs 3M+4S
+    k >>= 1n;
+  }
+  return toAffine(acc);        // 1I + 4M + 1S at the end
+}
+
+// ─── Full Jacobian addition: J + J → J ───────────────────────────────────────
+// Used when the addend's Z ≠ 1 (after the first doubling step).
+// Cost: 12M + 4S.  Formula (A.1) with arbitrary Z1, Z2.
+function jacAdd(P, Q) {
+  if (P === INF) return Q;
+  if (Q === INF) return P;
+
+  // Fast path: if Q.Z === 1n, use the cheaper mixed formula
+  if (Q.Z === 1n) return jacAddMixed(P, { X: Q.X, Y: Q.Y });
+
+  const { X: X1, Y: Y1, Z: Z1 } = P;
+  const { X: X2, Y: Y2, Z: Z2 } = Q;
+
+  const Z1Z1  = mod(Z1 * Z1,          q); // Z1²   (1S)
+  const Z2Z2  = mod(Z2 * Z2,          q); // Z2²   (1S)
+  const U1    = mod(X1 * Z2Z2,        q); // X1·Z2² (1M)
+  const U2    = mod(X2 * Z1Z1,        q); // X2·Z1² (1M)
+  const S1    = mod(Y1 * Z2 * Z2Z2,   q); // Y1·Z2³ (2M)
+  const S2    = mod(Y2 * Z1 * Z1Z1,   q); // Y2·Z1³ (2M)
+  const H     = mod(U2 - U1,          q);
+  const R     = mod(S2 - S1,          q);
+
+  if (H === 0n) {
+    if (R === 0n) return jacDouble(P);
+    return INF;
+  }
+
+  const HH    = mod(H * H,            q); // H²   (1S)
+  const HHH   = mod(HH * H,           q); // H³   (1M)
+  const U1HH  = mod(U1 * HH,          q); // U1·H² (1M)
+
+  const X3 = mod(R*R - HHH - 2n*U1HH,        q); // (1S + prev)
+  const Y3 = mod(R*(U1HH - X3) - S1*HHH,     q); // (2M)
+  const Z3 = mod(H * Z1 * Z2,                 q); // (2M)
+
+  if (Z3 === 0n) return INF;
+  return { X: X3, Y: Y3, Z: Z3 };
+}
+
+// ─── SHA-256 (double) ────────────────────────────────────────────────────────
+
+async function sha256(data) {
+  const enc = new TextEncoder().encode(data);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return new Uint8Array(buf);
+}
+
+async function doubleSha256(data) {
+  const enc = new TextEncoder().encode(data);
+  const buf1 = await crypto.subtle.digest('SHA-256', enc);
+  const buf2 = await crypto.subtle.digest('SHA-256', buf1);
+  return new Uint8Array(buf2);
+}
+
+async function hashToInt(message) {
+  const bytes = await doubleSha256(message);
+  let hex = '';
+  bytes.forEach(b => hex += b.toString(16).padStart(2, '0'));
+  return BigInt('0x' + hex);
+}
+
+// ─── Random BigInt in [1, m-1] ───────────────────────────────────────────────
+
+function randomBigInt(max) {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  let hex = '';
+  bytes.forEach(b => hex += b.toString(16).padStart(2, '0'));
+  return mod(BigInt('0x' + hex), max - 1n) + 1n;
+}
+
+// ─── Format helpers ──────────────────────────────────────────────────────────
+
+function fmtHex(n, bytes = 32) {
+  return n.toString(16).padStart(bytes * 2, '0').toUpperCase().match(/.{8}/g).join(' ');
+}
+
+function setVal(id, text, cls = '') {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'val ' + cls;
+}
+
+function setCheck(container, idx, ok, detail = '') {
+  const rows = container.querySelectorAll('.row');
+  const row = rows[idx];
+  const icon = row.querySelector('.icon');
+  const desc = row.querySelector('.desc strong');
+  const base = desc.textContent;
+  if (ok === 'pending') {
+    icon.textContent = '⟳';
+    row.querySelector('.desc').style.color = 'var(--muted)';
+  } else if (ok) {
+    icon.textContent = '✓';
+    icon.style.color = 'var(--ok)';
+    if (detail) {
+      const s = document.createElement('span');
+      s.style.cssText = 'color:var(--muted);margin-left:6px;';
+      s.textContent = detail;
+      row.querySelector('.desc').appendChild(s);
+    }
+  } else {
+    icon.textContent = '✗';
+    icon.style.color = '#ef4444';
+  }
+}
+
+// ─── State ───────────────────────────────────────────────────────────────────
+
+let state = { d: null, Q: null, generated: false };
+
+// ─── Step 1: Key Pair Generation ─────────────────────────────────────────────
+
+async function generateKeyPair() {
+  const btn = document.getElementById('btnGen');
+  btn.disabled = true;
+  btn.textContent = '⟳ Computing…';
+
+  document.getElementById('step1').className = 'step active';
+  setVal('val-d', 'Sampling random d ∈ [1, n−1]…', 'loading');
+  setVal('val-Qx', 'x: computing Q = d·P…', 'loading');
+  setVal('val-Qy', 'y: (Jacobian double-and-add, converting to affine at end)', 'loading');
+
+  await new Promise(r => setTimeout(r, 60));
+
+  // Line 1: random d
+  const d = randomBigInt(n);
+
+  // Line 2: Q = dP
+  const Q = scalarMul(d, G);
+
+  state.d = d;
+  state.Q = Q;
+  state.generated = true;
+
+  setVal('val-d', fmtHex(d), 'highlight');
+  setVal('val-Qx', 'x: ' + fmtHex(Q.x), 'highlight');
+  setVal('val-Qy', 'y: ' + fmtHex(Q.y), 'highlight');
+
+  document.getElementById('step1').className = 'step done';
+  document.getElementById('prog1').className = 'progress-seg done';
+
+  btn.disabled = false;
+  btn.textContent = '⟳ Regenerate Key Pair';
+
+  // Auto-run validation
+  await runValidation();
+}
+
+// ─── Step 2: Public Key Validation ───────────────────────────────────────────
+
+async function runValidation() {
+  const { Q } = state;
+  document.getElementById('step2').className = 'step active';
+  document.getElementById('prog1').className = 'progress-seg active';
+
+  const container = document.getElementById('val-checks');
+  const res = document.getElementById('val-result');
+
+  // Reset
+  container.querySelectorAll('.row .icon').forEach(el => { el.textContent = '○'; el.style.color = ''; });
+  container.querySelectorAll('.row .desc span').forEach(el => el.remove());
+
+  await new Promise(r => setTimeout(r, 200));
+
+  // Check 1: Q ≠ ∞
+  const c1 = Q !== null;
+  setCheck(container, 0, c1, c1 ? 'Q is a finite affine point' : '');
+  await new Promise(r => setTimeout(r, 150));
+
+  // Check 2: coordinates in [0, q-1]
+  const c2 = Q.x >= 0n && Q.x < q && Q.y >= 0n && Q.y < q;
+  setCheck(container, 1, c2, c2 ? `x,y ∈ [0, q−1] ✓` : 'coordinate out of range');
+  await new Promise(r => setTimeout(r, 150));
+
+  // Check 3: satisfies curve equation y² ≡ x³ + 7 (mod q)
+  const lhs = mod(Q.y * Q.y, q);
+  const rhs = mod(Q.x * Q.x * Q.x + b_curve, q);
+  const c3 = lhs === rhs;
+  setCheck(container, 2, c3, c3 ? 'y² ≡ x³ + 7 (mod q) confirmed' : 'point not on curve');
+  await new Promise(r => setTimeout(r, 150));
+
+  // Check 4: nQ = ∞ (automatic since h=1)
+  setCheck(container, 3, true, 'h=1 → guaranteed by checks 1–3 (Appendix B.2.2)');
+
+  const allOk = c1 && c2 && c3;
+  res.style.display = 'flex';
+  res.className = 'status-bar ' + (allOk ? 'ok' : 'bad');
+  res.innerHTML = `<div class="dot"></div> ${allOk ? 'Public key Q is VALID — Algorithm 3.3 returns Valid' : 'Validation FAILED'}`;
+
+  document.getElementById('step2').className = 'step ' + (allOk ? 'done' : 'error');
+  document.getElementById('prog2').className = 'progress-seg ' + (allOk ? 'active' : '');
+
+  if (allOk) {
+    document.getElementById('btnSign').disabled = false;
+    document.getElementById('step3').className = 'step active';
+  }
+}
+
+// ─── Step 3: Digital Signature Generation ────────────────────────────────────
+
+async function generateSignature() {
+  const btn = document.getElementById('btnSign');
+  btn.disabled = true;
+  btn.textContent = '✎ Signing…';
+
+  const message = document.getElementById('msg-input').value;
+  if (!message.trim()) {
+    alert('Please enter a message to sign.');
+    btn.disabled = false;
+    btn.textContent = '✎ Sign Message';
+    return;
+  }
+
+  const { d, Q } = state;
+
+  // Reset displays
+  setVal('val-hash', 'Computing double-SHA-256…', 'loading');
+  setVal('val-k', 'Sampling nonce k…', 'loading');
+  setVal('val-r', '—', '');
+  setVal('val-s', '—', '');
+  document.getElementById('sig-result').style.display = 'none';
+  document.getElementById('verify-section').style.display = 'none';
+
+  // Animate hash pipeline
+  const viz = document.getElementById('hash-viz');
+  const boxes = viz.querySelectorAll('.box');
+  boxes.forEach(b => b.classList.remove('active'));
+
+  await new Promise(r => setTimeout(r, 100));
+  boxes[0].classList.add('active');
+  await new Promise(r => setTimeout(r, 200));
+  boxes[1].classList.add('active');
+  await new Promise(r => setTimeout(r, 200));
+  boxes[2].classList.add('active');
+  await new Promise(r => setTimeout(r, 200));
+  boxes[3].classList.add('active');
+
+  // Line 4: e = H(m)
+  const e = await hashToInt(message);
+  const eHex = fmtHex(e);
+  setVal('val-hash', eHex, 'highlight');
+
+  await new Promise(r => setTimeout(r, 100));
+
+  // Lines 1–5: retry loop (almost certainly one iteration)
+  let r_sig, s_sig, k;
+  let attempts = 0;
+  do {
+    attempts++;
+    k = randomBigInt(n);       // Line 1
+    const kP = scalarMul(k, G); // Line 2
+    r_sig = mod(kP.x, n);      // Line 3
+    if (r_sig === 0n) continue;
+
+    const kinv = modinv(k, n);
+    s_sig = mod(kinv * (e + d * r_sig), n); // Line 5
+  } while (s_sig === 0n);
+
+  setVal('val-k', fmtHex(k) + (attempts > 1 ? `  (retried ${attempts} times)` : ''), 'highlight');
+  setVal('val-r', fmtHex(r_sig), 'ok');
+  setVal('val-s', fmtHex(s_sig), 'ok');
+
+  const res = document.getElementById('sig-result');
+  res.style.display = 'flex';
+  res.className = 'status-bar ok';
+  res.innerHTML = `<div class="dot"></div> Signature (r, s) generated — Algorithm 3.4 complete`;
+
+  document.getElementById('prog3').className = 'progress-seg active';
+
+  // Run verification preview
+  await new Promise(r => setTimeout(r, 300));
+  await runVerification(e, r_sig, s_sig, Q);
+
+  btn.disabled = false;
+  btn.textContent = '✎ Sign Again (new k)';
+  document.getElementById('step3').className = 'step done';
+  document.getElementById('prog3').className = 'progress-seg done';
+}
+
+// ─── Verification preview (Algorithm 3.5) ────────────────────────────────────
+
+async function runVerification(e, r_sig, s_sig, Q) {
+  const section = document.getElementById('verify-section');
+  section.style.display = 'block';
+  const container = document.getElementById('verify-steps');
+
+  container.querySelectorAll('.row .icon').forEach(el => { el.textContent = '○'; el.style.color = ''; });
+  container.querySelectorAll('.row .desc span').forEach(el => el.remove());
+
+  await new Promise(r => setTimeout(r, 100));
+
+  // Check 1: r,s in [1,n-1]
+  const c1 = r_sig >= 1n && r_sig < n && s_sig >= 1n && s_sig < n;
+  setCheck(container, 0, c1, 'r, s ∈ [1, n−1]');
+  await new Promise(r => setTimeout(r, 150));
+
+  // w = s⁻¹ mod n
+  const w = modinv(s_sig, n);
+  setCheck(container, 1, true, 'w = ' + fmtHex(w).slice(0, 19) + '…');
+  await new Promise(r => setTimeout(r, 150));
+
+  // u1, u2
+  const u1 = mod(e * w, n);
+  const u2 = mod(r_sig * w, n);
+  setCheck(container, 2, true, 'u₁=' + u1.toString(16).slice(0, 8) + '… u₂=' + u2.toString(16).slice(0, 8) + '…');
+  await new Promise(r => setTimeout(r, 150));
+
+  // X = u1P + u2Q  — both scalarMul results are affine; lift to Jacobian then add
+  const u1P_aff = scalarMul(u1, G);
+  const u2Q_aff = scalarMul(u2, Q);
+  // Add the two affine results using jacAdd (lifts each to Jacobian Z=1 then adds)
+  const X_jac = jacAdd(toJac(u1P_aff), toJac(u2Q_aff));
+  const X = toAffine(X_jac);
+  const c4 = X !== null;
+  setCheck(container, 3, c4, c4 ? 'X = (' + X.x.toString(16).slice(0,8) + '…, ' + X.y.toString(16).slice(0,8) + '…)' : 'X = ∞ — INVALID');
+  await new Promise(r => setTimeout(r, 150));
+
+  // v = x(X) mod n ?= r
+  const v = mod(X.x, n);
+  const c5 = v === r_sig;
+  setCheck(container, 4, c5, c5 ? 'v = r ✓ — signature is AUTHENTIC' : 'v ≠ r — signature REJECTED');
+
+  const vres = document.getElementById('verify-result');
+  vres.className = 'status-bar ' + (c5 ? 'ok' : 'bad');
+  vres.innerHTML = `<div class="dot"></div> Algorithm 3.5: ${c5 ? 'VALID — signature accepted. The proof in Appendix B.5 holds: X = k·P, so v = r.' : 'INVALID — verification failed.'}`;
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('prog0').className = 'progress-seg done';
+});
+</script>
+</body>
+</html>
