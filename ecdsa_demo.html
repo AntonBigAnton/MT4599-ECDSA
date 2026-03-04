@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Signing A Bitcoin (Demo)</title>
-/* PAGE STYLING WRITTEN BY CLAUDE AI */
 <style>
+  /* PAGE STYLING WRITTEN BY CLAUDE AI */
   @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Serif+Display:ital@0;1&display=swap');
 
   :root {
@@ -170,8 +170,8 @@
     display: block;
     font-size: 10px;
     color: var(--muted);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-transform: none;
     margin-bottom: 6px;
   }
 
@@ -368,6 +368,7 @@
     .grid2 { grid-template-columns: 1fr; }
     header h1 { font-size: 1.8rem; }
   }
+  /* END OF CLAUDE AI CODE */
 </style>
 </head>
 <body>
@@ -377,7 +378,7 @@
     <div class="eyebrow">MT4599 · Project in Mathematics</div>
     <h1>Signing a <em>Bitcoin</em></h1>
     <p>Live execution of Algorithms 3.2, 3.3, 3.4 and 3.5 using the real secp256k1 domain parameters from Section 4.1. All scalar multiplications use mixed Jacobian coordinates (Table 2.12, Appendix A.2.3). A single field inversion converts the final Jacobian result back to affine.</p>
-    <p><strong>Please note that this page's styling is AI generated using Claude AI's Sonnet 4.6.</strong> The functional aspects of this demo, such as the algorithms and interactive elements, are coded by me. Please refer to the source code for indications on where AI has been used.</p>
+    <p><strong>Please note that this page's styling is AI generated using Claude AI's Sonnet 4.6.</strong> However, the functional aspects of this demo, such as the algorithms and interactive elements, are coded by me. Please refer to the source code for indications on where AI has been used.</p>
   </header>
 
   <div class="progress-track">
@@ -385,6 +386,7 @@
     <div class="progress-seg" id="prog1"></div>
     <div class="progress-seg" id="prog2"></div>
     <div class="progress-seg" id="prog3"></div>
+    <div class="progress-seg" id="prog4"></div>
   </div>
 
   <!-- STEP 0: Domain Parameters -->
@@ -403,7 +405,7 @@
         </div>
         <div class="field">
           <label>Curve coefficients <span>a</span>, <span>b</span></label>
-          <div class="val"><span style="color:var(--muted)">a</span> = 0 &nbsp;&nbsp; <span style="color:var(--muted)">b</span> = 7 &nbsp;&nbsp;→&nbsp; <span style="color:var(--accent3)">y<sup>2<\sup> = x<sup>3</sup> + 7</span></div>
+          <div class="val"><span style="color:var(--muted)">a</span> = 0 &nbsp;&nbsp; <span style="color:var(--muted)">b</span> = 7 &nbsp;&nbsp;→&nbsp; <span style="color:var(--accent3)">y<sup>2</sup> = x<sup>3</sup> + 7</span></div>
         </div>
         <div class="field">
           <label>Base point <span>P</span> = (<span>x<sub>p</sub></span>, <span>y<sub>p</sub></span>)</label>
@@ -436,19 +438,19 @@
 
       <div class="note" style="margin-bottom:14px">
         <strong>Algorithm 3.2:</strong><br>
-        Line 1 — Randomly select <em>d</em> &isin;<sub>R</sub> [1, n−1]<br>
+        Line 1 — Randomly select <em>d</em> &isin;<sub>R</sub> [1, n − 1]<br>
         Line 2 — Compute Q = d·P using mixed Jacobian scalar multiplication<br>
         Line 3 — Return (Q, d)
       </div>
 
       <div class="btn-row">
-        <button onclick="generateKeyPair()" id="btnGen">&#x27F3; Generate Key Pair</button>
+        <button onclick="generateKeyPair()" id="btnGen">⟳ Generate Key Pair</button>
       </div>
 
       <hr class="divider">
 
       <div class="field">
-        <label>Private key <span>d</span> — random &isin; [1, n−1]</label>
+        <label>Private key <span>d</span> &isin;<sub>R</sub> [1, n − 1]</label>
         <div class="val" id="val-d">— awaiting generation</div>
       </div>
 
@@ -474,15 +476,15 @@
       <div class="note" style="margin-bottom:14px">
         <strong>Algorithm 3.3:</strong><br>
         Line 1 — Verify Q &ne; &infin;<br>
-        Line 2 — Verify x<sub>Q</sub>, y<sub>Q</sub> &isin; [0, q−1]<br>
+        Line 2 — Verify x<sub>Q</sub>, y<sub>Q</sub> &isin; [0, q − 1]<br>
         Line 3 — Verify y<sub>Q</sub><sup>2</sup> &equiv; x<sub>Q</sub><sup>3</sup> + 7 (mod q)<br>
         Line 4 — Verify n·Q = &infin;</em>
       </div>
 
       <div class="sig-check" id="val-checks">
         <div class="row"><div class="icon">○</div><div class="desc"><strong>Check 1:</strong> Q &ne; &infin;</div></div>
-        <div class="row"><div class="icon">○</div><div class="desc"><strong>Check 2:</strong> Coordinates in [0, q−1]</div></div>
-        <div class="row"><div class="icon">○</div><div class="desc"><strong>Check 3:</strong> Point lies on curve y<sup>2<\sup> &equiv; x<sup>3</sup> + 7 (mod q)</div></div>
+        <div class="row"><div class="icon">○</div><div class="desc"><strong>Check 2:</strong> Coordinates in [0, q − 1]</div></div>
+        <div class="row"><div class="icon">○</div><div class="desc"><strong>Check 3:</strong> Point lies on curve y<sup>2</sup> &equiv; x<sup>3</sup> + 7 (mod q)</div></div>
         <div class="row"><div class="icon">○</div><div class="desc"><strong>Check 4:</strong> n·Q = &infin;</div></div>
       </div>
 
@@ -494,24 +496,24 @@
   <div class="step" id="step3">
     <div class="step-header">
       <div class="step-num">3</div>
-      <div class="step-title">Digital Signature Generation — Algorithm 3.4</div>
-      <div class="step-tag">Section 3.4</div>
+      <div class="step-title">Digital Signature Generation</div>
+      <div class="step-tag">Algorithm 3.4</div>
     </div>
     <div class="step-body">
       <div class="algo-ref">Input: D, d, m &nbsp;·&nbsp; Output: signature (r, s)</div>
 
       <div class="field">
         <label>Message <span>m</span> — enter any text</label>
-        <textarea id="msg-input" rows="3" placeholder="e.g. Alice pays Bob 0.5 BTC (tx: a3f9...)">"Alice pays Bob 0.5 BTC — block #841000"</textarea>
+        <textarea id="msg-input" rows="3" placeholder="e.g. Antoine transfers 0.2 BTC to Stefania">Antoine transfers 0.2 BTC to Stefania</textarea>
       </div>
 
       <div class="note" style="margin-bottom:12px">
         <strong>Algorithm 3.4:</strong><br>
-        Line 1 — Select random nonce k &isin;<sub>R</sub> [1, n−1]<br>
-        Line 2 — Compute (x₁, y₁) = k·P via mixed Jacobian scalar multiplication (same as Alg 3.2)<br>
-        Line 3 — r = x₁ mod n &nbsp;(if r=0, retry)<br>
-        Line 4 — e = SHA-256(SHA-256(m)) &nbsp;→ integer<br>
-        Line 5 — s = k⁻¹(e + d·r) mod n &nbsp;(if s=0, retry)<br>
+        Line 1 — Select random per-message secret k &isin;<sub>R</sub> [1, n − 1]<br>
+        Line 2 — Compute (x<sub>1</sub>, y<sub>1</sub>) = k·P<br>
+        Line 3 — r = x<sub>1</sub> mod n &nbsp;(if r = 0, retry)<br>
+        Line 4 — e = SHA-256(SHA-256(m))<br>
+        Line 5 — s = k<sup>-1</sup>(e + d·r) mod n &nbsp;(if s = 0, retry)<br>
         Line 6 — Return (r, s)
       </div>
 
@@ -520,7 +522,7 @@
       <hr class="divider">
 
       <div class="field">
-        <label>Hash pipeline &nbsp;<span>e = SHA-256(SHA-256(m))</span></label>
+        <label>Hash pipeline <span>e = SHA-256(SHA-256(m))</span></label>
         <div class="hash-viz" id="hash-viz">
           <div class="box">m (raw text)</div>
           <div class="arrow">→</div>
@@ -534,52 +536,62 @@
       </div>
 
       <div class="field">
-        <label>Nonce <span>k</span> &nbsp;(per-message secret — must NEVER be reused)</label>
+        <label>Per-message secret <span>k</span></label>
         <div class="val" id="val-k">—</div>
-        <div class="note"><strong>Critical:</strong> If k is reused across two signatures, an attacker can recover d (private key) directly. This is how the PlayStation 3 private key was extracted.</div>
       </div>
 
       <div class="grid2">
         <div class="field">
-          <label>Signature component <span>r</span> = x₁ mod n</label>
+          <label>Signature component <span>r = x<sub>1</sub> mod n</span></label>
           <div class="val" id="val-r">—</div>
         </div>
         <div class="field">
-          <label>Signature component <span>s</span> = k⁻¹(e + dr) mod n</label>
+          <label>Signature component <span>s = k<sup>-1</sup>(e + dr) mod n</span></label>
           <div class="val" id="val-s">—</div>
         </div>
       </div>
 
       <div class="status-bar info" id="sig-result" style="display:none"></div>
 
-      <hr class="divider">
+    </div>
+  </div>
 
-      <!-- Quick verification preview -->
-      <div id="verify-section" style="display:none">
-        <div class="algo-ref">Quick-check: Algorithm 3.5 verification</div>
-        <div class="note" style="margin-bottom:12px">
-          <strong>Algorithm 3.5 (abbreviated):</strong><br>
-          w = s⁻¹ mod n &nbsp;·&nbsp; u₁ = e·w mod n &nbsp;·&nbsp; u₂ = r·w mod n<br>
-          X = u₁·P + u₂·Q &nbsp;·&nbsp; v = x(X) mod n &nbsp;·&nbsp; Accept iff v = r
-        </div>
-        <div class="sig-check" id="verify-steps">
-          <div class="row"><div class="icon">○</div><div class="desc"><strong>r, s &isin; [1, n−1]</strong> — range check</div></div>
-          <div class="row"><div class="icon">○</div><div class="desc"><strong>w = s⁻¹ mod n</strong> — modular inverse</div></div>
-          <div class="row"><div class="icon">○</div><div class="desc"><strong>u₁, u₂</strong> — scalar multipliers</div></div>
-          <div class="row"><div class="icon">○</div><div class="desc"><strong>X = u₁P + u₂Q &ne; &infin;</strong> — point computation</div></div>
-          <div class="row"><div class="icon">○</div><div class="desc"><strong>v = r</strong> — final equality check</div></div>
-        </div>
-        <div class="status-bar info" id="verify-result"></div>
+  <!-- STEP 4: Signature Verification -->
+  <div class="step" id="step4">
+    <div class="step-header">
+      <div class="step-num">4</div>
+      <div class="step-title">Digital Signature Verification</div>
+      <div class="step-tag">Algorithm 3.5</div>
+    </div>
+    <div class="step-body">
+      <div class="algo-ref">Input: D, Q, m, (r, s) &nbsp;·&nbsp; Output: Valid / Invalid</div>
+
+      <div class="note" style="margin-bottom:14px">
+        <strong>Algorithm 3.5:</strong><br>
+        Line 1 — Verify r, s &isin; [1, n−1]<br>
+        Line 2 — Compute e = SHA-256(SHA-256(m))<br>
+        Line 3 — Compute w = s<sup>-1</sup> mod n<br>
+        Line 4 — Compute u<sub>1</sub> = e·w mod n and u<sub>2</sub> = r·w mod n<br>
+        Line 5 — Compute X = u<sub>1</sub>·P + u<sub>2</sub>·Q<br>
+        Line 6 — If X = &infin;, return Invalid<br>
+        Line 7 — Compute v = x(X) mod n<br>
+        Line 8 — If v = r, return Valid; otherwise return Invalid
       </div>
 
+      <div class="sig-check" id="verify-steps">
+        <div class="row"><div class="icon">○</div><div class="desc"><strong>Line 1:</strong> r, s &isin; [1, n−1]</div></div>
+        <div class="row"><div class="icon">○</div><div class="desc"><strong>Lines 3–4:</strong> w = s<sup>-1</sup> mod n, then u<sub>1</sub> and u<sub>2</sub></div></div>
+        <div class="row"><div class="icon">○</div><div class="desc"><strong>Line 5:</strong> X = u<sub>1</sub>·P + u<sub>2</sub>·Q &ne; &infin;</div></div>
+        <div class="row"><div class="icon">○</div><div class="desc"><strong>Line 8:</strong> v = x(X) mod n equals r</div></div>
+      </div>
+
+      <div class="status-bar info" id="verify-result" style="display:none"></div>
     </div>
   </div>
 
 </div>
 
 <script>
-// ─── BigInt helpers ──────────────────────────────────────────────────────────
-
 function mod(a, m) {
   return ((a % m) + m) % m;
 }
@@ -595,7 +607,6 @@ function modpow(base, exp, m) {
   return result;
 }
 
-// Extended Euclidean — modular inverse
 function modinv(a, m) {
   a = mod(a, m);
   let [old_r, r] = [a, m];
@@ -608,196 +619,126 @@ function modinv(a, m) {
   return mod(old_s, m);
 }
 
-// ─── secp256k1 parameters ────────────────────────────────────────────────────
-
 const q = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2Fn;
 const n = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141n;
-const a_curve = 0n; // y² = x³ + 7  (a=0 simplifies doubling)
+const a_curve = 0n;
 const b_curve = 7n;
 
 const Gx = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798n;
 const Gy = 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8n;
-const G  = { x: Gx, y: Gy }; // affine base point; scalarMul lifts to Jacobian internally
+const G  = {x: Gx, y: Gy};
 
-// Jacobian point representation: { X, Y, Z }
-// Affine (x,y) ↔ Jacobian (X:Y:Z) via  x = X/Z², y = Y/Z³  (Z&ne;0)
-// "Mixed" / C-coordinate means Z=1, i.e. (X:Y:1) — same as affine.
-// Point at infinity &infin; represented as null.
 const INF = null;
 
-// Lift an affine point to a Jacobian mixed-coordinate point (Z=1)
 function toJac(P) {
   if (P === INF) return INF;
-  return { X: P.x, Y: P.y, Z: 1n };
+  return {X: P.x, Y: P.y, Z: 1n};
 }
 
-// Convert a full Jacobian point back to affine — costs 1I + 4M + 1S
 function toAffine(P) {
   if (P === INF) return INF;
-  if (P.Z === 1n) return { x: mod(P.X, q), y: mod(P.Y, q) }; // already affine
-  const Zi  = modinv(P.Z, q);          // 1I
-  const Zi2 = mod(Zi  * Zi,  q);       // 1S
-  const Zi3 = mod(Zi2 * Zi,  q);       // 1M
-  return {
-    x: mod(P.X * Zi2, q),              // 1M
-    y: mod(P.Y * Zi3, q),              // 1M
-  };
+  if (P.Z === 1n) return {x: mod(P.X, q), y: mod(P.Y, q)};
+  const Zi = modinv(P.Z, q);
+  const Zi2 = mod(Zi  * Zi,  q);
+  const Zi3 = mod(Zi2 * Zi,  q);
+  return {x: mod(P.X * Zi2, q), y: mod(P.Y * Zi3, q)};
 }
 
-// ─── Jacobian point doubling: 2J → J ─────────────────────────────────────────
-// Formula (A.2) from Appendix A.2.3, specialised to a=0 (secp256k1).
-// Cost: 3M + 4S  (vs 1I+2M+2S in affine).
-//
-// Intermediate variables (matching dissertation notation):
-//   A = Y₁²          (1S)
-//   B = 4·X₁·A       (1M)
-//   C = 3·X₁²        (1S, then ×3)   [uses a=0, so no a·Z⁴ term]
-//   X₃ = C² − 2B     (1S)
-//   Y₃ = C·(B−X₃) − 8·A²  (1M + 1S + 1M)
-//   Z₃ = 2·Y₁·Z₁    (1M)
 function jacDouble(P) {
   if (P === INF) return INF;
-  const { X: X1, Y: Y1, Z: Z1 } = P;
+  const {X: X1, Y: Y1, Z: Z1} = P;
 
-  const A  = mod(Y1 * Y1,          q); // A = Y1²
-  const B  = mod(4n * X1 * A,      q); // B = 4·X1·A
-  const C  = mod(3n * X1 * X1,     q); // C = 3·X1²  (a=0 drops the a·Z1⁴ term)
-  const X3 = mod(C * C - 2n * B,   q); // X3 = C² − 2B
-  const Y3 = mod(C * (B - X3) - 8n * A * A, q); // Y3 = C(B−X3) − 8A²
-  const Z3 = mod(2n * Y1 * Z1,     q); // Z3 = 2·Y1·Z1
+  const A = mod(Y1 * Y1, q);
+  const B = mod(4n * X1 * A, q);
+  const C = mod(3n * X1 * X1, q);
+  const X3 = mod(C * C - 2n * B, q);
+  const Y3 = mod(C * (B - X3) - 8n * A * A, q);
+  const Z3 = mod(2n * Y1 * Z1, q);
 
   if (Z3 === 0n) return INF;
-  return { X: X3, Y: Y3, Z: Z3 };
+  return {X: X3, Y: Y3, Z: Z3};
 }
 
-// ─── Mixed Jacobian addition: J + C → J ──────────────────────────────────────
-// Formula (A.1) from Appendix A.2.3, with Z2=1 (the "mixed" specialisation).
-// Cost: 8M + 3S  (vs 12M+4S for full J+J, or 1I+2M+1S in affine).
-//
-// Setting Z2=1 in the general formula (A.1) simplifies several terms:
-//   U1 = X1,  U2 = X2·Z1²       → H = U2 − U1 = X2·Z1² − X1
-//   S1 = Y1,  S2 = Y2·Z1³       → R = S2 − S1 = Y2·Z1³ − Y1
-//   X3 = R² − H²·(X1Z2² + X2Z1²) = R² − H³ − 2·U1·H²   (simplified)
-//   Y3 = R·(U1·H² − X3) − S1·H³
-//   Z3 = H·Z1
-//
-// P is full Jacobian (X1,Y1,Z1); Q is mixed/affine (X2,Y2,Z2=1).
 function jacAddMixed(P, Q) {
-  // Handle identity cases
-  if (P === INF) return { X: Q.X, Y: Q.Y, Z: 1n }; // result is Q, still mixed
+  if (P === INF) return {X: Q.X, Y: Q.Y, Z: 1n};
   if (Q === INF) return P;
 
-  const { X: X1, Y: Y1, Z: Z1 } = P;
-  const { X: X2, Y: Y2 } = Q; // Z2 = 1 implicit
+  const {X: X1, Y: Y1, Z: Z1} = P;
+  const {X: X2, Y: Y2} = Q;
 
-  const Z1Z1 = mod(Z1 * Z1,        q); // Z1²         (1S)
-  const Z1Z1Z1 = mod(Z1Z1 * Z1,    q); // Z1³         (1M)
-  const U2   = mod(X2 * Z1Z1,      q); // X2·Z1²      (1M)
-  const S2   = mod(Y2 * Z1Z1Z1,    q); // Y2·Z1³      (1M)
+  const Z1Z1 = mod(Z1 * Z1, q);
+  const Z1Z1Z1 = mod(Z1Z1 * Z1, q);
+  const U2 = mod(X2 * Z1Z1, q);
+  const S2 = mod(Y2 * Z1Z1Z1, q);
 
-  const H  = mod(U2 - X1,          q); // H = U2 − X1
-  const R  = mod(S2 - Y1,          q); // R = S2 − Y1
-
-  // Check if P = ±Q in affine (H=0)
-  if (H === 0n) {
-    if (R === 0n) return jacDouble(P); // P = Q → double
-    return INF;                         // P = −Q → infinity
-  }
-
-  const HH  = mod(H * H,            q); // H²          (1S)
-  const HHH = mod(HH * H,           q); // H³          (1M)
-  const U1HH = mod(X1 * HH,         q); // X1·H²       (1M)
-
-  const X3 = mod(R*R - HHH - 2n*U1HH,  q); // R²−H³−2·X1·H²  (1S + 2M implicit in prev)
-  const Y3 = mod(R*(U1HH - X3) - Y1*HHH, q); // R·(X1H²−X3)−Y1·H³  (2M)
-  const Z3 = mod(H * Z1,             q); // H·Z1        (1M)
-
-  if (Z3 === 0n) return INF;
-  return { X: X3, Y: Y3, Z: Z3 };
-}
-
-// ─── Mixed Jacobian scalar multiplication ─────────────────────────────────────
-// Strategy (matches Table 2.12 "J+C→J" column):
-//   - The base point P is fixed and kept as a mixed point C=(X:Y:1) throughout.
-//   - The addend is doubled each step: it starts mixed (Z=1) and becomes full
-//     Jacobian after the first double.  We track it as a Jacobian point.
-//   - The accumulator starts as &infin; and grows as a full Jacobian point.
-//   - Each bit: double the addend (2J→J, 3M+4S), then if bit=1 add to
-//     accumulator (J+C→J, 8M+3S) — but the addend's Z&ne;1 after first double,
-//     so strictly only the very first addition is "mixed" in the C sense.
-//     The real saving in Bitcoin's implementation is using the fixed generator G
-//     in precomputed mixed form; here we keep the addend in Jacobian and use
-//     the full mixed formula which still avoids the extra Z2² multiplications
-//     when Z2=1 at the start.
-//
-// For the addition X = u1P + u2Q in verification, we run two separate
-// scalar multiplications and add the resulting affine points via one
-// jacAddMixed call (converting the second to "mixed" Z=1 isn't exact —
-// we use a full affine-lifted Jacobian add for correctness there).
-function scalarMul(k, Paff) {
-  // Paff is an affine point {x, y}
-  if (k === 0n || Paff === INF) return INF;
-
-  let acc = INF;                // accumulator — full Jacobian
-  let add = toJac(Paff);       // addend starts as mixed (Z=1)
-
-  while (k > 0n) {
-    if (k & 1n) {
-      // acc + add:  acc is full Jacobian, add.Z may be 1 (first iter) or not.
-      // jacAddMixed expects add to have implicit Z2=1; for Z2&ne;1 after the
-      // first double we use the mixed formula with the actual Z, which is
-      // mathematically correct (the formula is derived for any Z2, setting
-      // Z2=1 only saves multiplications). We pass add.X, add.Y, add.Z and
-      // the function uses Z2=1 shortcut. To handle general Z2 we call a
-      // wrapper that checks whether add.Z === 1n.
-      acc = jacAdd(acc, add);
-    }
-    add = jacDouble(add);      // 2J → J, costs 3M+4S
-    k >>= 1n;
-  }
-  return toAffine(acc);        // 1I + 4M + 1S at the end
-}
-
-// ─── Full Jacobian addition: J + J → J ───────────────────────────────────────
-// Used when the addend's Z &ne; 1 (after the first doubling step).
-// Cost: 12M + 4S.  Formula (A.1) with arbitrary Z1, Z2.
-function jacAdd(P, Q) {
-  if (P === INF) return Q;
-  if (Q === INF) return P;
-
-  // Fast path: if Q.Z === 1n, use the cheaper mixed formula
-  if (Q.Z === 1n) return jacAddMixed(P, { X: Q.X, Y: Q.Y });
-
-  const { X: X1, Y: Y1, Z: Z1 } = P;
-  const { X: X2, Y: Y2, Z: Z2 } = Q;
-
-  const Z1Z1  = mod(Z1 * Z1,          q); // Z1²   (1S)
-  const Z2Z2  = mod(Z2 * Z2,          q); // Z2²   (1S)
-  const U1    = mod(X1 * Z2Z2,        q); // X1·Z2² (1M)
-  const U2    = mod(X2 * Z1Z1,        q); // X2·Z1² (1M)
-  const S1    = mod(Y1 * Z2 * Z2Z2,   q); // Y1·Z2³ (2M)
-  const S2    = mod(Y2 * Z1 * Z1Z1,   q); // Y2·Z1³ (2M)
-  const H     = mod(U2 - U1,          q);
-  const R     = mod(S2 - S1,          q);
+  const H = mod(U2 - X1, q);
+  const R = mod(S2 - Y1, q);
 
   if (H === 0n) {
     if (R === 0n) return jacDouble(P);
     return INF;
   }
 
-  const HH    = mod(H * H,            q); // H²   (1S)
-  const HHH   = mod(HH * H,           q); // H³   (1M)
-  const U1HH  = mod(U1 * HH,          q); // U1·H² (1M)
+  const HH = mod(H * H, q);
+  const HHH = mod(HH * H, q);
+  const U1HH = mod(X1 * HH, q);
 
-  const X3 = mod(R*R - HHH - 2n*U1HH,        q); // (1S + prev)
-  const Y3 = mod(R*(U1HH - X3) - S1*HHH,     q); // (2M)
-  const Z3 = mod(H * Z1 * Z2,                 q); // (2M)
+  const X3 = mod(R*R - HHH - 2n*U1HH, q);
+  const Y3 = mod(R*(U1HH - X3) - Y1*HHH, q);
+  const Z3 = mod(H * Z1, q);
 
   if (Z3 === 0n) return INF;
-  return { X: X3, Y: Y3, Z: Z3 };
+  return {X: X3, Y: Y3, Z: Z3};
 }
 
-// ─── SHA-256 (double) ────────────────────────────────────────────────────────
+function scalarMul(k, Paff) {
+  if (k === 0n || Paff === INF) return INF;
+
+  let acc = INF;
+  let add = toJac(Paff);
+
+  while (k > 0n) {
+    if (k & 1n) acc = jacAdd(acc, add);
+    add = jacDouble(add);
+    k >>= 1n;
+  }
+  return toAffine(acc);
+}
+
+function jacAdd(P, Q) {
+  if (P === INF) return Q;
+  if (Q === INF) return P;
+
+  if (Q.Z === 1n) return jacAddMixed(P, {X: Q.X, Y: Q.Y});
+
+  const {X: X1, Y: Y1, Z: Z1} = P;
+  const {X: X2, Y: Y2, Z: Z2} = Q;
+
+  const Z1Z1 = mod(Z1 * Z1, q);
+  const Z2Z2 = mod(Z2 * Z2, q);
+  const U1 = mod(X1 * Z2Z2, q);
+  const U2 = mod(X2 * Z1Z1, q);
+  const S1 = mod(Y1 * Z2 * Z2Z2, q);
+  const S2 = mod(Y2 * Z1 * Z1Z1, q);
+  const H = mod(U2 - U1, q);
+  const R = mod(S2 - S1, q);
+
+  if (H === 0n) {
+    if (R === 0n) return jacDouble(P);
+    return INF;
+  }
+
+  const HH = mod(H * H, q);
+  const HHH = mod(HH * H, q);
+  const U1HH = mod(U1 * HH, q);
+  
+  const X3 = mod(R*R - HHH - 2n*U1HH, q);
+  const Y3 = mod(R*(U1HH - X3) - S1*HHH, q);
+  const Z3 = mod(H * Z1 * Z2, q);
+
+  if (Z3 === 0n) return INF;
+  return {X: X3, Y: Y3, Z: Z3};
+}
 
 async function sha256(data) {
   const enc = new TextEncoder().encode(data);
@@ -819,8 +760,6 @@ async function hashToInt(message) {
   return BigInt('0x' + hex);
 }
 
-// ─── Random BigInt in [1, m-1] ───────────────────────────────────────────────
-
 function randomBigInt(max) {
   const bytes = new Uint8Array(32);
   crypto.getRandomValues(bytes);
@@ -828,8 +767,6 @@ function randomBigInt(max) {
   bytes.forEach(b => hex += b.toString(16).padStart(2, '0'));
   return mod(BigInt('0x' + hex), max - 1n) + 1n;
 }
-
-// ─── Format helpers ──────────────────────────────────────────────────────────
 
 function fmtHex(n, bytes = 32) {
   return n.toString(16).padStart(bytes * 2, '0').toUpperCase().match(/.{8}/g).join(' ');
@@ -848,33 +785,23 @@ function setCheck(container, idx, ok, detail = '') {
   const desc = row.querySelector('.desc strong');
   const base = desc.textContent;
   if (ok === 'pending') {
-    icon.textContent = '&#x27F3;';
+    icon.textContent = '⟳';
     row.querySelector('.desc').style.color = 'var(--muted)';
   } else if (ok) {
     icon.textContent = '✓';
     icon.style.color = 'var(--ok)';
-    if (detail) {
-      const s = document.createElement('span');
-      s.style.cssText = 'color:var(--muted);margin-left:6px;';
-      s.textContent = detail;
-      row.querySelector('.desc').appendChild(s);
-    }
   } else {
     icon.textContent = '✗';
     icon.style.color = '#ef4444';
   }
 }
 
-// ─── State ───────────────────────────────────────────────────────────────────
-
-let state = { d: null, Q: null, generated: false };
-
-// ─── Step 1: Key Pair Generation ─────────────────────────────────────────────
+let state = {d: null, Q: null, generated: false};
 
 async function generateKeyPair() {
   const btn = document.getElementById('btnGen');
   btn.disabled = true;
-  btn.textContent = '&#x27F3; Computing…';
+  btn.textContent = '⟳ Computing…';
 
   document.getElementById('step1').className = 'step active';
   setVal('val-d', 'Sampling random d &isin; [1, n−1]…', 'loading');
@@ -883,10 +810,8 @@ async function generateKeyPair() {
 
   await new Promise(r => setTimeout(r, 60));
 
-  // Line 1: random d
   const d = randomBigInt(n);
 
-  // Line 2: Q = dP
   const Q = scalarMul(d, G);
 
   state.d = d;
@@ -901,63 +826,53 @@ async function generateKeyPair() {
   document.getElementById('prog1').className = 'progress-seg done';
 
   btn.disabled = false;
-  btn.textContent = '&#x27F3; Regenerate Key Pair';
+  btn.textContent = '⟳ Regenerate Key Pair';
 
-  // Auto-run validation
   await runValidation();
 }
 
-// ─── Step 2: Public Key Validation ───────────────────────────────────────────
-
 async function runValidation() {
-  const { Q } = state;
+  const {Q} = state;
   document.getElementById('step2').className = 'step active';
-  document.getElementById('prog1').className = 'progress-seg active';
+  document.getElementById('prog2').className = 'progress-seg active';
 
   const container = document.getElementById('val-checks');
   const res = document.getElementById('val-result');
 
-  // Reset
   container.querySelectorAll('.row .icon').forEach(el => { el.textContent = '○'; el.style.color = ''; });
   container.querySelectorAll('.row .desc span').forEach(el => el.remove());
 
   await new Promise(r => setTimeout(r, 200));
 
-  // Check 1: Q &ne; &infin;
   const c1 = Q !== null;
   setCheck(container, 0, c1, c1 ? 'Q is a finite affine point' : '');
   await new Promise(r => setTimeout(r, 150));
 
-  // Check 2: coordinates in [0, q-1]
   const c2 = Q.x >= 0n && Q.x < q && Q.y >= 0n && Q.y < q;
   setCheck(container, 1, c2, c2 ? `x,y &isin; [0, q−1] ✓` : 'coordinate out of range');
   await new Promise(r => setTimeout(r, 150));
 
-  // Check 3: satisfies curve equation y² &equiv; x³ + 7 (mod q)
   const lhs = mod(Q.y * Q.y, q);
   const rhs = mod(Q.x * Q.x * Q.x + b_curve, q);
   const c3 = lhs === rhs;
   setCheck(container, 2, c3, c3 ? 'y² &equiv; x³ + 7 (mod q) confirmed' : 'point not on curve');
   await new Promise(r => setTimeout(r, 150));
 
-  // Check 4: nQ = &infin; (automatic since h=1)
   setCheck(container, 3, true, 'h=1 → guaranteed by checks 1–3 (Appendix B.2.2)');
 
   const allOk = c1 && c2 && c3;
   res.style.display = 'flex';
   res.className = 'status-bar ' + (allOk ? 'ok' : 'bad');
-  res.innerHTML = `<div class="dot"></div> ${allOk ? 'Public key Q is VALID — Algorithm 3.3 returns Valid' : 'Validation FAILED'}`;
+  res.innerHTML = `${allOk ? 'Public key Q is VALID — Algorithm 3.3 returns Valid' : 'Validation FAILED'}`;
 
   document.getElementById('step2').className = 'step ' + (allOk ? 'done' : 'error');
-  document.getElementById('prog2').className = 'progress-seg ' + (allOk ? 'active' : '');
+  document.getElementById('prog2').className = 'progress-seg ' + (allOk ? 'done' : '');
 
   if (allOk) {
     document.getElementById('btnSign').disabled = false;
     document.getElementById('step3').className = 'step active';
   }
 }
-
-// ─── Step 3: Digital Signature Generation ────────────────────────────────────
 
 async function generateSignature() {
   const btn = document.getElementById('btnSign');
@@ -972,17 +887,14 @@ async function generateSignature() {
     return;
   }
 
-  const { d, Q } = state;
+  const {d, Q} = state;
 
-  // Reset displays
   setVal('val-hash', 'Computing double-SHA-256…', 'loading');
   setVal('val-k', 'Sampling nonce k…', 'loading');
   setVal('val-r', '—', '');
   setVal('val-s', '—', '');
   document.getElementById('sig-result').style.display = 'none';
-  document.getElementById('verify-section').style.display = 'none';
 
-  // Animate hash pipeline
   const viz = document.getElementById('hash-viz');
   const boxes = viz.querySelectorAll('.box');
   boxes.forEach(b => b.classList.remove('active'));
@@ -996,25 +908,23 @@ async function generateSignature() {
   await new Promise(r => setTimeout(r, 200));
   boxes[3].classList.add('active');
 
-  // Line 4: e = H(m)
   const e = await hashToInt(message);
   const eHex = fmtHex(e);
   setVal('val-hash', eHex, 'highlight');
 
   await new Promise(r => setTimeout(r, 100));
 
-  // Lines 1–5: retry loop (almost certainly one iteration)
   let r_sig, s_sig, k;
   let attempts = 0;
   do {
     attempts++;
-    k = randomBigInt(n);       // Line 1
-    const kP = scalarMul(k, G); // Line 2
-    r_sig = mod(kP.x, n);      // Line 3
+    k = randomBigInt(n);
+    const kP = scalarMul(k, G);
+    r_sig = mod(kP.x, n);
     if (r_sig === 0n) continue;
 
     const kinv = modinv(k, n);
-    s_sig = mod(kinv * (e + d * r_sig), n); // Line 5
+    s_sig = mod(kinv * (e + d * r_sig), n);
   } while (s_sig === 0n);
 
   setVal('val-k', fmtHex(k) + (attempts > 1 ? `  (retried ${attempts} times)` : ''), 'highlight');
@@ -1024,69 +934,65 @@ async function generateSignature() {
   const res = document.getElementById('sig-result');
   res.style.display = 'flex';
   res.className = 'status-bar ok';
-  res.innerHTML = `<div class="dot"></div> Signature (r, s) generated — Algorithm 3.4 complete`;
+  res.innerHTML = `Signature (r, s) generated — Algorithm 3.4 complete`;
 
-  document.getElementById('prog3').className = 'progress-seg active';
+  document.getElementById('step3').className = 'step done';
+  document.getElementById('prog3').className = 'progress-seg done';
 
-  // Run verification preview
   await new Promise(r => setTimeout(r, 300));
   await runVerification(e, r_sig, s_sig, Q);
 
   btn.disabled = false;
   btn.textContent = '✎ Sign Again (new k)';
-  document.getElementById('step3').className = 'step done';
-  document.getElementById('prog3').className = 'progress-seg done';
 }
 
-// ─── Verification preview (Algorithm 3.5) ────────────────────────────────────
-
 async function runVerification(e, r_sig, s_sig, Q) {
-  const section = document.getElementById('verify-section');
-  section.style.display = 'block';
+  document.getElementById('step4').className = 'step active';
+  document.getElementById('prog4').className = 'progress-seg active';
+
   const container = document.getElementById('verify-steps');
+  const vres = document.getElementById('verify-result');
 
   container.querySelectorAll('.row .icon').forEach(el => { el.textContent = '○'; el.style.color = ''; });
   container.querySelectorAll('.row .desc span').forEach(el => el.remove());
+  vres.style.display = 'none';
 
-  await new Promise(r => setTimeout(r, 100));
+  await new Promise(r => setTimeout(r, 200));
 
-  // Check 1: r,s in [1,n-1]
+  // Line 1: r, s in [1, n-1]
   const c1 = r_sig >= 1n && r_sig < n && s_sig >= 1n && s_sig < n;
-  setCheck(container, 0, c1, 'r, s &isin; [1, n−1]');
+  setCheck(container, 0, c1);
   await new Promise(r => setTimeout(r, 150));
 
-  // w = s⁻¹ mod n
+  // Lines 3-4: w, u1, u2
   const w = modinv(s_sig, n);
-  setCheck(container, 1, true, 'w = ' + fmtHex(w).slice(0, 19) + '…');
-  await new Promise(r => setTimeout(r, 150));
-
-  // u1, u2
   const u1 = mod(e * w, n);
   const u2 = mod(r_sig * w, n);
-  setCheck(container, 2, true, 'u₁=' + u1.toString(16).slice(0, 8) + '… u₂=' + u2.toString(16).slice(0, 8) + '…');
+  setCheck(container, 1, true);
   await new Promise(r => setTimeout(r, 150));
 
-  // X = u1P + u2Q  — both scalarMul results are affine; lift to Jacobian then add
+  // Line 5: X = u1P + u2Q
   const u1P_aff = scalarMul(u1, G);
   const u2Q_aff = scalarMul(u2, Q);
-  // Add the two affine results using jacAdd (lifts each to Jacobian Z=1 then adds)
   const X_jac = jacAdd(toJac(u1P_aff), toJac(u2Q_aff));
   const X = toAffine(X_jac);
   const c4 = X !== null;
-  setCheck(container, 3, c4, c4 ? 'X = (' + X.x.toString(16).slice(0,8) + '…, ' + X.y.toString(16).slice(0,8) + '…)' : 'X = &infin; — INVALID');
+  setCheck(container, 2, c4);
   await new Promise(r => setTimeout(r, 150));
 
-  // v = x(X) mod n ?= r
+  // Lines 7-8: v = x(X) mod n, check v = r
   const v = mod(X.x, n);
   const c5 = v === r_sig;
-  setCheck(container, 4, c5, c5 ? 'v = r ✓ — signature is AUTHENTIC' : 'v &ne; r — signature REJECTED');
+  setCheck(container, 3, c5);
 
-  const vres = document.getElementById('verify-result');
-  vres.className = 'status-bar ' + (c5 ? 'ok' : 'bad');
-  vres.innerHTML = `<div class="dot"></div> Algorithm 3.5: ${c5 ? 'VALID — signature accepted. The proof in Appendix B.5 holds: X = k·P, so v = r.' : 'INVALID — verification failed.'}`;
+  const allOk = c1 && c4 && c5;
+  vres.style.display = 'flex';
+  vres.className = 'status-bar ' + (allOk ? 'ok' : 'bad');
+  vres.innerHTML = `Algorithm 3.5: ${allOk ? 'VALID — signature accepted.' : 'INVALID — verification failed.'}`;
+
+  document.getElementById('step4').className = 'step ' + (allOk ? 'done' : 'error');
+  document.getElementById('prog4').className = 'progress-seg ' + (allOk ? 'done' : '');
 }
-
-// ─── Init ─────────────────────────────────────────────────────────────────────
 
 window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('prog0').className = 'progress-seg done';
