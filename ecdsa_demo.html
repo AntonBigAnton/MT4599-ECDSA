@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ECDSA · secp256k1 Demo (Jacobian)</title>
+<title>Signing A Bitcoin (Demo)</title>
+/* PAGE STYLING WRITTEN BY CLAUDE AI */
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Serif+Display:ital@0;1&display=swap');
 
@@ -373,9 +374,10 @@
 <div class="container">
 
   <header>
-    <div class="eyebrow">MT4599 · Section 3 &amp; 4</div>
-    <h1>ECDSA over <em>secp256k1</em></h1>
-    <p>Live execution of Algorithms 3.2, 3.3, and 3.4 using the exact domain parameters from Section 4.1. All scalar multiplications use <strong>mixed Jacobian coordinates</strong> (Appendix A.2.3, Table 2.12): doubling in full Jacobian 2J→J (3M+4S), addition via the J+C→J mixed formula (8M+3S). A single field inversion converts the final Jacobian result back to affine.</p>
+    <div class="eyebrow">MT4599 · Project in Mathematics</div>
+    <h1>Signing a <em>Bitcoin</em></h1>
+    <p>Live execution of Algorithms 3.2, 3.3, 3.4 and 3.5 using the real secp256k1 domain parameters from Section 4.1. All scalar multiplications use mixed Jacobian coordinates (Table 2.12, Appendix A.2.3). A single field inversion converts the final Jacobian result back to affine.</p>
+    <p><strong>Please note that this page's styling is AI generated using Claude AI's Sonnet 4.6.</strong> The functional aspects of this demo, such as the algorithms and interactive elements, are coded by me. Please refer to the source code for indications on where AI has been used.</p>
   </header>
 
   <div class="progress-track">
@@ -390,35 +392,35 @@
     <div class="step-header">
       <div class="step-num">0</div>
       <div class="step-title">Domain Parameters — secp256k1</div>
-      <div class="step-tag">Section 4.1 · Alg 3.1</div>
+      <div class="step-tag">Section 4.1</div>
     </div>
     <div class="step-body">
       <div class="algo-ref">D = (q, FR, a, b, P, n, h)</div>
       <div class="grid2">
         <div class="field">
-          <label>Field order <span>q</span> (256-bit prime)</label>
+          <label>Field order <span>q</span></label>
           <div class="val" style="font-size:10px">FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE FFFFFC2F</div>
         </div>
         <div class="field">
           <label>Curve coefficients <span>a</span>, <span>b</span></label>
-          <div class="val"><span style="color:var(--muted)">a</span> = 0 &nbsp;&nbsp; <span style="color:var(--muted)">b</span> = 7 &nbsp;&nbsp;→&nbsp; <span style="color:var(--accent3)">y² = x³ + 7</span></div>
+          <div class="val"><span style="color:var(--muted)">a</span> = 0 &nbsp;&nbsp; <span style="color:var(--muted)">b</span> = 7 &nbsp;&nbsp;→&nbsp; <span style="color:var(--accent3)">y<sup>2<\sup> = x<sup>3</sup> + 7</span></div>
         </div>
         <div class="field">
-          <label>Base point <span>P</span> = (<span>x</span><sub>p</sub>, <span>y</span><sub>p</sub>)</label>
+          <label>Base point <span>P</span> = (<span>x<sub>p</sub></span>, <span>y<sub>p</sub></span>)</label>
           <div class="val" style="font-size:10px; line-height:1.8">
-            <span style="color:var(--muted)">x:</span> 79BE667E F9DCBBAC 55A06295 CE870B07 029BFCDB 2DCE28D9 59F2815B 16F81798<br>
-            <span style="color:var(--muted)">y:</span> 483ADA77 26A3C465 5DA4FBFC 0E1108A8 FD17B448 A6855419 9C47D08F FB10D4B8
+            <span style="color:var(--muted)">x<sub>p</sub>:</span> 79BE667E F9DCBBAC 55A06295 CE870B07 029BFCDB 2DCE28D9 59F2815B 16F81798<br>
+            <span style="color:var(--muted)">y<sub>p</sub>:</span> 483ADA77 26A3C465 5DA4FBFC 0E1108A8 FD17B448 A6855419 9C47D08F FB10D4B8
           </div>
         </div>
         <div class="field">
           <label>Order <span>n</span> of <span>P</span>, cofactor <span>h</span></label>
           <div class="val" style="font-size:10px; line-height:1.8">
             <span style="color:var(--muted)">n:</span> FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE BAAEDCE6 AF48A03B BFD25E8C D0364141<br>
-            <span style="color:var(--muted)">h:</span> <span style="color:var(--ok)">1</span> &nbsp;(#E(𝔽<sub>q</sub>) = n, curve order is prime)
+            <span style="color:var(--muted)">h:</span> <span style="color:var(--ok)">1</span>
           </div>
         </div>
       </div>
-      <div class="status-bar ok"><div class="dot"></div> Domain parameters valid — all Algorithm 3.1 checks pass for secp256k1 · Point arithmetic via mixed Jacobian coords (Appendix A.2.3)</div>
+      <div class="status-bar ok">Domain parameters valid — all Algorithm 3.1 checks pass for secp256k1</div>
     </div>
   </div>
 
@@ -426,40 +428,35 @@
   <div class="step" id="step1">
     <div class="step-header">
       <div class="step-num">1</div>
-      <div class="step-title">Key Pair Generation — Algorithm 3.2</div>
-      <div class="step-tag">Section 3.2</div>
+      <div class="step-title">Key Pair Generation</div>
+      <div class="step-tag">Algorithm 3.2</div>
     </div>
     <div class="step-body">
       <div class="algo-ref">Input: D &nbsp;·&nbsp; Output: (Q, d)</div>
 
       <div class="note" style="margin-bottom:14px">
         <strong>Algorithm 3.2:</strong><br>
-        Line 1 — Randomly select <em>d</em> ∈<sub>R</sub> [1, n−1]<br>
-        Line 2 — Compute Q = d·P using mixed Jacobian scalar multiplication:<br>
-        &nbsp;&nbsp;• Addend kept as mixed coord C = (X:Y:1) — Z always 1<br>
-        &nbsp;&nbsp;• Accumulator in full Jacobian J = (X:Y:Z)<br>
-        &nbsp;&nbsp;• Each bit: double accumulator (2J→J, 3M+4S) then add mixed (J+C→J, 8M+3S)<br>
-        &nbsp;&nbsp;• Final conversion: (X,Y,Z) → affine via one field inversion (1I)<br>
+        Line 1 — Randomly select <em>d</em> &isin;<sub>R</sub> [1, n−1]<br>
+        Line 2 — Compute Q = d·P using mixed Jacobian scalar multiplication<br>
         Line 3 — Return (Q, d)
       </div>
 
       <div class="btn-row">
-        <button onclick="generateKeyPair()" id="btnGen">⟳ Generate Key Pair</button>
+        <button onclick="generateKeyPair()" id="btnGen">&#x27F3; Generate Key Pair</button>
       </div>
 
       <hr class="divider">
 
       <div class="field">
-        <label>Private key <span>d</span> — random ∈ [1, n−1] &nbsp;<span style="font-size:10px;color:var(--muted)">(256-bit integer)</span></label>
+        <label>Private key <span>d</span> — random &isin; [1, n−1]</label>
         <div class="val" id="val-d">— awaiting generation</div>
-        <div class="note">Selected uniformly at random. Must be kept secret. This is the discrete logarithm of Q to base P.</div>
       </div>
 
       <div class="field">
-        <label>Public key <span>Q</span> = d·P &nbsp;— affine point (converted from final Jacobian result)</label>
+        <label>Public key <span>Q</span> = d·P</label>
         <div class="val" id="val-Qx" style="margin-bottom:6px; font-size:10px">x: —</div>
         <div class="val" id="val-Qy" style="font-size:10px">y: —</div>
-        <div class="note">Computed via mixed Jacobian double-and-add. The accumulator carries a Z coordinate throughout; a single inversion Z⁻¹ at the end yields the affine point. Safe to publish.</div>
+        <div class="note">Computed via mixed Jacobian point doubling and addition. A single inversion at the end yields the affine point.</div>
       </div>
     </div>
   </div>
@@ -468,25 +465,25 @@
   <div class="step" id="step2">
     <div class="step-header">
       <div class="step-num">2</div>
-      <div class="step-title">Public Key Validation — Algorithm 3.3</div>
-      <div class="step-tag">Section 3.2</div>
+      <div class="step-title">Public Key Validation</div>
+      <div class="step-tag">Algorithm 3.3</div>
     </div>
     <div class="step-body">
       <div class="algo-ref">Input: D, Q &nbsp;·&nbsp; Output: Valid / Invalid</div>
 
       <div class="note" style="margin-bottom:14px">
         <strong>Algorithm 3.3:</strong><br>
-        Line 1 — Verify Q ≠ ∞<br>
-        Line 2 — Verify x<sub>Q</sub>, y<sub>Q</sub> ∈ [0, q−1]<br>
-        Line 3 — Verify y<sub>Q</sub>² ≡ x<sub>Q</sub>³ + 7 (mod q)<br>
-        Line 4 — Verify n·Q = ∞ &nbsp;<em>(automatic since h=1; see Appendix B.2.2)</em>
+        Line 1 — Verify Q &ne; &infin;<br>
+        Line 2 — Verify x<sub>Q</sub>, y<sub>Q</sub> &isin; [0, q−1]<br>
+        Line 3 — Verify y<sub>Q</sub><sup>2</sup> &equiv; x<sub>Q</sub><sup>3</sup> + 7 (mod q)<br>
+        Line 4 — Verify n·Q = &infin;</em>
       </div>
 
       <div class="sig-check" id="val-checks">
-        <div class="row"><div class="icon">○</div><div class="desc"><strong>Check 1:</strong> Q ≠ ∞</div></div>
+        <div class="row"><div class="icon">○</div><div class="desc"><strong>Check 1:</strong> Q &ne; &infin;</div></div>
         <div class="row"><div class="icon">○</div><div class="desc"><strong>Check 2:</strong> Coordinates in [0, q−1]</div></div>
-        <div class="row"><div class="icon">○</div><div class="desc"><strong>Check 3:</strong> Point lies on curve y² ≡ x³ + 7 (mod q)</div></div>
-        <div class="row"><div class="icon">○</div><div class="desc"><strong>Check 4:</strong> n·Q = ∞ &nbsp;(guaranteed since h=1 and checks 1–3 pass)</div></div>
+        <div class="row"><div class="icon">○</div><div class="desc"><strong>Check 3:</strong> Point lies on curve y<sup>2<\sup> &equiv; x<sup>3</sup> + 7 (mod q)</div></div>
+        <div class="row"><div class="icon">○</div><div class="desc"><strong>Check 4:</strong> n·Q = &infin;</div></div>
       </div>
 
       <div class="status-bar info" id="val-result" style="display:none"></div>
@@ -510,7 +507,7 @@
 
       <div class="note" style="margin-bottom:12px">
         <strong>Algorithm 3.4:</strong><br>
-        Line 1 — Select random nonce k ∈<sub>R</sub> [1, n−1]<br>
+        Line 1 — Select random nonce k &isin;<sub>R</sub> [1, n−1]<br>
         Line 2 — Compute (x₁, y₁) = k·P via mixed Jacobian scalar multiplication (same as Alg 3.2)<br>
         Line 3 — r = x₁ mod n &nbsp;(if r=0, retry)<br>
         Line 4 — e = SHA-256(SHA-256(m)) &nbsp;→ integer<br>
@@ -566,10 +563,10 @@
           X = u₁·P + u₂·Q &nbsp;·&nbsp; v = x(X) mod n &nbsp;·&nbsp; Accept iff v = r
         </div>
         <div class="sig-check" id="verify-steps">
-          <div class="row"><div class="icon">○</div><div class="desc"><strong>r, s ∈ [1, n−1]</strong> — range check</div></div>
+          <div class="row"><div class="icon">○</div><div class="desc"><strong>r, s &isin; [1, n−1]</strong> — range check</div></div>
           <div class="row"><div class="icon">○</div><div class="desc"><strong>w = s⁻¹ mod n</strong> — modular inverse</div></div>
           <div class="row"><div class="icon">○</div><div class="desc"><strong>u₁, u₂</strong> — scalar multipliers</div></div>
-          <div class="row"><div class="icon">○</div><div class="desc"><strong>X = u₁P + u₂Q ≠ ∞</strong> — point computation</div></div>
+          <div class="row"><div class="icon">○</div><div class="desc"><strong>X = u₁P + u₂Q &ne; &infin;</strong> — point computation</div></div>
           <div class="row"><div class="icon">○</div><div class="desc"><strong>v = r</strong> — final equality check</div></div>
         </div>
         <div class="status-bar info" id="verify-result"></div>
@@ -623,9 +620,9 @@ const Gy = 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8n;
 const G  = { x: Gx, y: Gy }; // affine base point; scalarMul lifts to Jacobian internally
 
 // Jacobian point representation: { X, Y, Z }
-// Affine (x,y) ↔ Jacobian (X:Y:Z) via  x = X/Z², y = Y/Z³  (Z≠0)
+// Affine (x,y) ↔ Jacobian (X:Y:Z) via  x = X/Z², y = Y/Z³  (Z&ne;0)
 // "Mixed" / C-coordinate means Z=1, i.e. (X:Y:1) — same as affine.
-// Point at infinity ∞ represented as null.
+// Point at infinity &infin; represented as null.
 const INF = null;
 
 // Lift an affine point to a Jacobian mixed-coordinate point (Z=1)
@@ -724,9 +721,9 @@ function jacAddMixed(P, Q) {
 //   - The base point P is fixed and kept as a mixed point C=(X:Y:1) throughout.
 //   - The addend is doubled each step: it starts mixed (Z=1) and becomes full
 //     Jacobian after the first double.  We track it as a Jacobian point.
-//   - The accumulator starts as ∞ and grows as a full Jacobian point.
+//   - The accumulator starts as &infin; and grows as a full Jacobian point.
 //   - Each bit: double the addend (2J→J, 3M+4S), then if bit=1 add to
-//     accumulator (J+C→J, 8M+3S) — but the addend's Z≠1 after first double,
+//     accumulator (J+C→J, 8M+3S) — but the addend's Z&ne;1 after first double,
 //     so strictly only the very first addition is "mixed" in the C sense.
 //     The real saving in Bitcoin's implementation is using the fixed generator G
 //     in precomputed mixed form; here we keep the addend in Jacobian and use
@@ -747,7 +744,7 @@ function scalarMul(k, Paff) {
   while (k > 0n) {
     if (k & 1n) {
       // acc + add:  acc is full Jacobian, add.Z may be 1 (first iter) or not.
-      // jacAddMixed expects add to have implicit Z2=1; for Z2≠1 after the
+      // jacAddMixed expects add to have implicit Z2=1; for Z2&ne;1 after the
       // first double we use the mixed formula with the actual Z, which is
       // mathematically correct (the formula is derived for any Z2, setting
       // Z2=1 only saves multiplications). We pass add.X, add.Y, add.Z and
@@ -762,7 +759,7 @@ function scalarMul(k, Paff) {
 }
 
 // ─── Full Jacobian addition: J + J → J ───────────────────────────────────────
-// Used when the addend's Z ≠ 1 (after the first doubling step).
+// Used when the addend's Z &ne; 1 (after the first doubling step).
 // Cost: 12M + 4S.  Formula (A.1) with arbitrary Z1, Z2.
 function jacAdd(P, Q) {
   if (P === INF) return Q;
@@ -851,7 +848,7 @@ function setCheck(container, idx, ok, detail = '') {
   const desc = row.querySelector('.desc strong');
   const base = desc.textContent;
   if (ok === 'pending') {
-    icon.textContent = '⟳';
+    icon.textContent = '&#x27F3;';
     row.querySelector('.desc').style.color = 'var(--muted)';
   } else if (ok) {
     icon.textContent = '✓';
@@ -877,10 +874,10 @@ let state = { d: null, Q: null, generated: false };
 async function generateKeyPair() {
   const btn = document.getElementById('btnGen');
   btn.disabled = true;
-  btn.textContent = '⟳ Computing…';
+  btn.textContent = '&#x27F3; Computing…';
 
   document.getElementById('step1').className = 'step active';
-  setVal('val-d', 'Sampling random d ∈ [1, n−1]…', 'loading');
+  setVal('val-d', 'Sampling random d &isin; [1, n−1]…', 'loading');
   setVal('val-Qx', 'x: computing Q = d·P…', 'loading');
   setVal('val-Qy', 'y: (Jacobian double-and-add, converting to affine at end)', 'loading');
 
@@ -904,7 +901,7 @@ async function generateKeyPair() {
   document.getElementById('prog1').className = 'progress-seg done';
 
   btn.disabled = false;
-  btn.textContent = '⟳ Regenerate Key Pair';
+  btn.textContent = '&#x27F3; Regenerate Key Pair';
 
   // Auto-run validation
   await runValidation();
@@ -926,24 +923,24 @@ async function runValidation() {
 
   await new Promise(r => setTimeout(r, 200));
 
-  // Check 1: Q ≠ ∞
+  // Check 1: Q &ne; &infin;
   const c1 = Q !== null;
   setCheck(container, 0, c1, c1 ? 'Q is a finite affine point' : '');
   await new Promise(r => setTimeout(r, 150));
 
   // Check 2: coordinates in [0, q-1]
   const c2 = Q.x >= 0n && Q.x < q && Q.y >= 0n && Q.y < q;
-  setCheck(container, 1, c2, c2 ? `x,y ∈ [0, q−1] ✓` : 'coordinate out of range');
+  setCheck(container, 1, c2, c2 ? `x,y &isin; [0, q−1] ✓` : 'coordinate out of range');
   await new Promise(r => setTimeout(r, 150));
 
-  // Check 3: satisfies curve equation y² ≡ x³ + 7 (mod q)
+  // Check 3: satisfies curve equation y² &equiv; x³ + 7 (mod q)
   const lhs = mod(Q.y * Q.y, q);
   const rhs = mod(Q.x * Q.x * Q.x + b_curve, q);
   const c3 = lhs === rhs;
-  setCheck(container, 2, c3, c3 ? 'y² ≡ x³ + 7 (mod q) confirmed' : 'point not on curve');
+  setCheck(container, 2, c3, c3 ? 'y² &equiv; x³ + 7 (mod q) confirmed' : 'point not on curve');
   await new Promise(r => setTimeout(r, 150));
 
-  // Check 4: nQ = ∞ (automatic since h=1)
+  // Check 4: nQ = &infin; (automatic since h=1)
   setCheck(container, 3, true, 'h=1 → guaranteed by checks 1–3 (Appendix B.2.2)');
 
   const allOk = c1 && c2 && c3;
@@ -1055,7 +1052,7 @@ async function runVerification(e, r_sig, s_sig, Q) {
 
   // Check 1: r,s in [1,n-1]
   const c1 = r_sig >= 1n && r_sig < n && s_sig >= 1n && s_sig < n;
-  setCheck(container, 0, c1, 'r, s ∈ [1, n−1]');
+  setCheck(container, 0, c1, 'r, s &isin; [1, n−1]');
   await new Promise(r => setTimeout(r, 150));
 
   // w = s⁻¹ mod n
@@ -1076,13 +1073,13 @@ async function runVerification(e, r_sig, s_sig, Q) {
   const X_jac = jacAdd(toJac(u1P_aff), toJac(u2Q_aff));
   const X = toAffine(X_jac);
   const c4 = X !== null;
-  setCheck(container, 3, c4, c4 ? 'X = (' + X.x.toString(16).slice(0,8) + '…, ' + X.y.toString(16).slice(0,8) + '…)' : 'X = ∞ — INVALID');
+  setCheck(container, 3, c4, c4 ? 'X = (' + X.x.toString(16).slice(0,8) + '…, ' + X.y.toString(16).slice(0,8) + '…)' : 'X = &infin; — INVALID');
   await new Promise(r => setTimeout(r, 150));
 
   // v = x(X) mod n ?= r
   const v = mod(X.x, n);
   const c5 = v === r_sig;
-  setCheck(container, 4, c5, c5 ? 'v = r ✓ — signature is AUTHENTIC' : 'v ≠ r — signature REJECTED');
+  setCheck(container, 4, c5, c5 ? 'v = r ✓ — signature is AUTHENTIC' : 'v &ne; r — signature REJECTED');
 
   const vres = document.getElementById('verify-result');
   vres.className = 'status-bar ' + (c5 ? 'ok' : 'bad');
