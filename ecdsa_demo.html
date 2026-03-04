@@ -959,19 +959,16 @@ async function runVerification(e, r_sig, s_sig, Q) {
 
   await new Promise(r => setTimeout(r, 200));
 
-  // Line 1: r, s in [1, n-1]
   const c1 = r_sig >= 1n && r_sig < n && s_sig >= 1n && s_sig < n;
   setCheck(container, 0, c1);
   await new Promise(r => setTimeout(r, 150));
 
-  // Lines 3-4: w, u1, u2
   const w = modinv(s_sig, n);
   const u1 = mod(e * w, n);
   const u2 = mod(r_sig * w, n);
   setCheck(container, 1, true);
   await new Promise(r => setTimeout(r, 150));
 
-  // Line 5: X = u1P + u2Q
   const u1P_aff = scalarMul(u1, G);
   const u2Q_aff = scalarMul(u2, Q);
   const X_jac = jacAdd(toJac(u1P_aff), toJac(u2Q_aff));
@@ -980,7 +977,6 @@ async function runVerification(e, r_sig, s_sig, Q) {
   setCheck(container, 2, c4);
   await new Promise(r => setTimeout(r, 150));
 
-  // Lines 7-8: v = x(X) mod n, check v = r
   const v = mod(X.x, n);
   const c5 = v === r_sig;
   setCheck(container, 3, c5);
